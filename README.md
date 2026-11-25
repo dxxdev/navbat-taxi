@@ -1,56 +1,169 @@
-# Welcome to your Expo app 👋
+# NavbatTaksi
 
-This is an [Expo](https://expo.dev) project created with [`create-expo-app`](https://www.npmjs.com/package/create-expo-app).
+A taxi queue and seat reservation application connecting passengers and drivers through route-based seat availability and a queue system.
 
-## Get started
+## Project Overview
 
-1. Install dependencies
+NavbatTaksi is a cross-platform application designed to simplify finding available taxi seats, joining a passenger queue, and managing trips.
 
-   ```bash
-   npm install
-   ```
+The application provides a shared platform for passengers and drivers.
 
-2. Start the app
+### Main Goals
 
-   ```bash
-   npx expo start
-   ```
+- Simplify finding available taxi routes.
+- Allow drivers to publish routes and available seats.
+- Allow passengers to join a queue for a route.
+- Manage queue order and booking confirmation.
+- Automatically expire offers when passengers fail to respond in time.
 
-In the output, you'll find options to open the app in a
+## User Roles
 
-- [development build](https://docs.expo.dev/develop/development-builds/introduction/)
-- [Android emulator](https://docs.expo.dev/workflow/android-studio-emulator/)
-- [iOS simulator](https://docs.expo.dev/workflow/ios-simulator/)
-- [Expo Go](https://expo.dev/go), a limited sandbox for trying out app development with Expo
+### Passenger
 
-You can start developing by editing the files inside the **src/app** directory. This project uses [file-based routing](https://docs.expo.dev/router/introduction).
+- Browse available routes.
+- View route information.
+- Join a queue.
+- Monitor queue position and status.
+- Confirm a seat offer.
+- Cancel an active queue entry.
 
-## Get a fresh project
+### Driver
 
-When you're ready, run:
+- Create and publish routes.
+- Set departure time and available seats.
+- View passengers in the queue.
+- Manage route availability.
+- Monitor booking statuses.
+
+## Tech Stack
+
+### Frontend
+
+- React Native
+- Expo
+- TypeScript
+- Expo Router
+
+### Backend
+
+- Supabase
+- PostgreSQL
+- Supabase Auth
+- Supabase Realtime
+- Supabase Edge Functions
+- PostGIS
+
+### Development Tools
+
+- Git
+- GitHub
+- Visual Studio Code
+
+## Platforms
+
+- Android
+- Web
+
+## Project Status
+
+> Early development — initial project setup.
+
+- <input type="checkbox" checked> <del>Project planning</del>
+- <input type="checkbox"> <span>Expo project setup</span>
+- <input type="checkbox"> <span>Frontend architecture</span>
+- <input type="checkbox"> <span>Navigation</span>
+- <input type="checkbox"> <span>UI components</span>
+- <input type="checkbox"> <span>Supabase integration</span>
+- <input type="checkbox"> <span>Authentication</span>
+- <input type="checkbox"> <span>Passenger features</span>
+- <input type="checkbox"> <span>Driver features</span>
+- <input type="checkbox"> <span>Queue management</span>
+- <input type="checkbox"> <span>Booking system</span>
+- <input type="checkbox"> <span>Realtime functionality</span>
+- <input type="checkbox"> <span>Security implementation</span>
+- <input type="checkbox"> <span>Testing</span>
+- <input type="checkbox"> <span>Android build</span>
+- <input type="checkbox"> <span>Web deployment</span>
+
+## Getting Started
+
+### Prerequisites
+
+- Node.js (LTS)
+- npm
+- Git
+
+### Installation
+
+Clone the repository:
 
 ```bash
-npm run reset-project
+git clone https://github.com/dxxdev/navbat-taxi.git
 ```
 
-This command will move the starter code to the **example** directory and create a blank **src/app** directory where you can start developing.
+Navigate to the project directory:
+```bash
+cd navbat-taksi
+```
 
-### Other setup steps
+Install dependencies:
+```bash
+npm install
+```
 
-- To set up ESLint for linting, run `npx expo lint`, or follow our guide on ["Using ESLint and Prettier"](https://docs.expo.dev/guides/using-eslint/)
-- If you'd like to set up unit testing, follow our guide on ["Unit Testing with Jest"](https://docs.expo.dev/develop/unit-testing/)
-- Learn more about the TypeScript setup in this template in our guide on ["Using TypeScript"](https://docs.expo.dev/guides/typescript/)
+Start the development server:
+```bash
+npx expo start
+```
 
-## Learn more
+Run on Web:
+```bash
+npx expo start --web
+```
 
-To learn more about developing your project with Expo, look at the following resources:
+### Project Structure
 
-- [Expo documentation](https://docs.expo.dev/): Learn fundamentals, or go into advanced topics with our [guides](https://docs.expo.dev/guides).
-- [Learn Expo tutorial](https://docs.expo.dev/tutorial/introduction/): Follow a step-by-step tutorial where you'll create a project that runs on Android, iOS, and the web.
+Project structure will be documented and updated as the application architecture evolves
 
-## Join the community
+### Environment Varibles
 
-Join our community of developers creating universal apps.
+Environment variables will be documented when backend integration is implemented.
+Never commit private credentials, access tokens, or service role keys.
 
-- [Expo on GitHub](https://github.com/expo/expo): View our open source platform and contribute.
-- [Discord community](https://chat.expo.dev): Chat with Expo users and ask questions.
+### Development Roadmap
+
+1. Initialize the development environment.
+2. Establish project architecture.
+3. Implement navigation.
+4. Create the UI design system.
+5. Configure Supabase.
+6. Implement authentication.
+7. Develop passenger features.
+8. Develop driver features.
+0. Implement queue and booking logic.
+10. Integrate realtime updates.
+11. Test the application.
+12. Prepare Android and Web builds.
+
+### Development Log
+
+Initial Planning
+
+- Defined the core application concept.
+- Established passenger and driver roles.
+- Selected React Native and Expo.
+- Selected Supabase as the backend platform.
+- Planned Android and Web support.
+
+
+
+### README bilan ishlash tartibimiz
+ Har bir bosqichdan keyin README'ning tegishli bo'limini ham yangilab boramiz:
+- **Features** — yangi funksiya qo'shilganda.
+- **Tech Stack** — yangi texnologiya yoki kutubxona qo'shilganda.
+- **Project Structure** — fayl va papkalar o'zgarganda.
+- **Installation** — o'rnatish jarayoni o'zgarganda.
+- **Project Status** — vazifa bajarilganda.
+- **Development Log** — bosqich yakunlanganda.
+
+>README har doim kodimizning haqiqiy holatiga mos bo'ladi. Hali yozilmagan funksiyalarni tayyor deb belgilamaymiz.
