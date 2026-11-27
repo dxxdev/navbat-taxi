@@ -1,43 +1,23 @@
-# Learn more https://docs.github.com/en/get-started/getting-started-with-git/ignoring-files
-
-# dependencies
+# Bog'liqliklar va build
 node_modules/
-
-# Expo
-.expo/
 dist/
 web-build/
-expo-env.d.ts
 
-# Native
-.kotlin/
-*.orig.*
-*.jks
-*.p8
-*.p12
-*.key
-*.mobileprovision
-
-# Metro
-.metro-health-check*
-
-# debug
-npm-debug.*
-yarn-debug.*
-yarn-error.*
-
-# macOS
-.DS_Store
-*.pem
-
-# local env files
+# Muhit fayllari (kalitlar repozitoriyga tushmasin)
+.env
+.env.local
 .env*.local
+mobile/.env.local
 
-# typescript
+# Expo
+mobile/.expo/
+mobile/expo-env.d.ts
+
+# Supabase lokal
+supabase/.branches/
+supabase/.temp/
+supabase/.env
+
+# Tizim
+.DS_Store
 *.tsbuildinfo
-
-example
-
-# generated native folders
-/ios
-/android

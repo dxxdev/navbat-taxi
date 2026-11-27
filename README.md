@@ -1,169 +1,46 @@
 # NavbatTaksi
 
-A taxi queue and seat reservation application connecting passengers and drivers through route-based seat availability and a queue system.
+Yo'nalishli taksilar vokzaldagi jonli navbatini raqamlashtiruvchi ilova (xomaki prototip).
+Haydovchi vokzalda yo'nalishi va bo'sh o'rindiqlarini e'lon qilib navbatga yoziladi;
+yo'lovchi o'rindiq band qiladi; vaqtida kelmasa, band avtomatik bekor bo'ladi.
 
-## Project Overview
+- `mobile/` — React Native (Expo, TypeScript), Android + Web
+- `supabase/` — lokal backend (PostgreSQL, Auth, Realtime, Edge Functions)
+- `docs/`, `scripts/`
 
-NavbatTaksi is a cross-platform application designed to simplify finding available taxi seats, joining a passenger queue, and managing trips.
+## Talablar
 
-The application provides a shared platform for passengers and drivers.
+Node.js (LTS), Docker, Supabase CLI, Expo Go (telefonda) yoki Android emulyator.
 
-### Main Goals
-
-- Simplify finding available taxi routes.
-- Allow drivers to publish routes and available seats.
-- Allow passengers to join a queue for a route.
-- Manage queue order and booking confirmation.
-- Automatically expire offers when passengers fail to respond in time.
-
-## User Roles
-
-### Passenger
-
-- Browse available routes.
-- View route information.
-- Join a queue.
-- Monitor queue position and status.
-- Confirm a seat offer.
-- Cancel an active queue entry.
-
-### Driver
-
-- Create and publish routes.
-- Set departure time and available seats.
-- View passengers in the queue.
-- Manage route availability.
-- Monitor booking statuses.
-
-## Tech Stack
-
-### Frontend
-
-- React Native
-- Expo
-- TypeScript
-- Expo Router
-
-### Backend
-
-- Supabase
-- PostgreSQL
-- Supabase Auth
-- Supabase Realtime
-- Supabase Edge Functions
-- PostGIS
-
-### Development Tools
-
-- Git
-- GitHub
-- Visual Studio Code
-
-## Platforms
-
-- Android
-- Web
-
-## Project Status
-
-> Early development — initial project setup.
-
-- <input type="checkbox" checked> <del>Project planning</del>
-- <input type="checkbox"> <span>Expo project setup</span>
-- <input type="checkbox"> <span>Frontend architecture</span>
-- <input type="checkbox"> <span>Navigation</span>
-- <input type="checkbox"> <span>UI components</span>
-- <input type="checkbox"> <span>Supabase integration</span>
-- <input type="checkbox"> <span>Authentication</span>
-- <input type="checkbox"> <span>Passenger features</span>
-- <input type="checkbox"> <span>Driver features</span>
-- <input type="checkbox"> <span>Queue management</span>
-- <input type="checkbox"> <span>Booking system</span>
-- <input type="checkbox"> <span>Realtime functionality</span>
-- <input type="checkbox"> <span>Security implementation</span>
-- <input type="checkbox"> <span>Testing</span>
-- <input type="checkbox"> <span>Android build</span>
-- <input type="checkbox"> <span>Web deployment</span>
-
-## Getting Started
-
-### Prerequisites
-
-- Node.js (LTS)
-- npm
-- Git
-
-### Installation
-
-Clone the repository:
+## Ishga tushirish
 
 ```bash
-git clone https://github.com/dxxdev/navbat-taxi.git
+chmod +x scripts/*.sh
+cd mobile && npm install && cd ..
+cp mobile/.env.example mobile/.env.local
+
+./scripts/dev-up.sh      # supabase start + db reset + kalitni .env.local ga yozadi
+./scripts/run-web.sh     # web
+./scripts/run-android.sh # Android emulyator
 ```
 
-Navigate to the project directory:
-```bash
-cd navbat-taksi
-```
+Kalitni qo'lda qo'yish: `supabase status` dan "Publishable key" ni
+`mobile/.env.local` dagi `EXPO_PUBLIC_SUPABASE_PUBLISHABLE_KEY` ga yozing.
 
-Install dependencies:
-```bash
-npm install
-```
+Tekshiruv: `cd mobile && npm run typecheck && npm run lint && npm test`
 
-Start the development server:
-```bash
-npx expo start
-```
+## Sinov raqamlari (OTP kodi: 123456)
 
-Run on Web:
-```bash
-npx expo start --web
-```
+998900000001 … 998900000006
 
-### Project Structure
+## Android va lokal http
 
-Project structure will be documented and updated as the application architecture evolves
+Emulyatorda host kompyuter `http://10.0.2.2:54321` orqali ko'rinadi. Expo Go va
+debug rejimida http ishlaydi. Haqiqiy qurilmada `EXPO_PUBLIC_SUPABASE_URL` ga
+kompyuter LAN IP'sini yozing. **Release build'da Android http (cleartext) ni
+bloklaydi** — production uchun https manzil kerak.
 
-### Environment Varibles
+## Eslatma
 
-Environment variables will be documented when backend integration is implemented.
-Never commit private credentials, access tokens, or service role keys.
-
-### Development Roadmap
-
-1. Initialize the development environment.
-2. Establish project architecture.
-3. Implement navigation.
-4. Create the UI design system.
-5. Configure Supabase.
-6. Implement authentication.
-7. Develop passenger features.
-8. Develop driver features.
-0. Implement queue and booking logic.
-10. Integrate realtime updates.
-11. Test the application.
-12. Prepare Android and Web builds.
-
-### Development Log
-
-Initial Planning
-
-- Defined the core application concept.
-- Established passenger and driver roles.
-- Selected React Native and Expo.
-- Selected Supabase as the backend platform.
-- Planned Android and Web support.
-
-
-
-### README bilan ishlash tartibimiz
- Har bir bosqichdan keyin README'ning tegishli bo'limini ham yangilab boramiz:
-- **Features** — yangi funksiya qo'shilganda.
-- **Tech Stack** — yangi texnologiya yoki kutubxona qo'shilganda.
-- **Project Structure** — fayl va papkalar o'zgarganda.
-- **Installation** — o'rnatish jarayoni o'zgarganda.
-- **Project Status** — vazifa bajarilganda.
-- **Development Log** — bosqich yakunlanganda.
-
->README har doim kodimizning haqiqiy holatiga mos bo'ladi. Hali yozilmagan funksiyalarni tayyor deb belgilamaymiz.
+`EXPO_PUBLIC_*` qiymatlari bundle ichiga tushadi: faqat publishable kalit qo'yiladi,
+secret kalit hech qachon mijoz kodiga yoki repozitoriyga tushmasin.

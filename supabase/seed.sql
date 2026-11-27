@@ -1,0 +1,1 @@
+-- Boshlang'ich ma'lumotlar keyingi qismlarda qo'shiladi
