@@ -1,5 +1,9 @@
-import { QueryClient, QueryClientProvider, useQueryClient } from "@tanstack/react-query";
-import { Redirect, Stack, usePathname, type Href } from "expo-router";
+import {
+  QueryClient,
+  QueryClientProvider,
+  useQueryClient,
+} from "@tanstack/react-query";
+import { Redirect, Stack, useSegments, type Href } from "expo-router";
 import * as SplashScreen from "expo-splash-screen";
 import { useEffect, useState } from "react";
 import { StyleSheet, View } from "react-native";
@@ -8,7 +12,7 @@ import { Button, PaperProvider, Text, useTheme } from "react-native-paper";
 import { LoadingView } from "@/components/LoadingView";
 import { SnackbarProvider } from "@/components/SnackbarProvider";
 import { AuthProvider, useSession } from "@/core/auth";
-import { resolveRedirect } from "@/core/guards";
+import { getGuardRedirect } from "@/core/guards";
 import { theme } from "@/core/theme";
 import { useProfile } from "@/data/profile";
 import { strings } from "@/l10n/strings";
@@ -35,7 +39,7 @@ export default function RootLayout() {
 function Gate() {
   const paperTheme = useTheme();
   const queryClient = useQueryClient();
-  const pathname = usePathname();
+  const segments = useSegments();
   const { session, loading, signOut } = useSession();
   const profileQuery = useProfile();
 
@@ -53,7 +57,13 @@ function Gate() {
   }, [loading, session, queryClient]);
 
   const target = ready
-    ? resolveRedirect({ session, profile: profileQuery.data ?? null, pathname })
+    ? getGuardRedirect({
+        segments: segments as string[],
+        hasSession: !!session,
+        sessionLoading: false, // ready = true bo'lganda sessiya allaqachon yuklangan
+        // Profil so'rovi xato bersa, undefined uzatamiz: guard joyida qoldiradi
+        profile: profileFailed ? undefined : (profileQuery.data ?? null),
+      })
     : null;
 
   return (
@@ -102,6 +112,11 @@ function Gate() {
 
 const styles = StyleSheet.create({
   root: { flex: 1 },
-  center: { alignItems: "center", justifyContent: "center", padding: 24, gap: 12 },
+  center: {
+    alignItems: "center",
+    justifyContent: "center",
+    padding: 24,
+    gap: 12,
+  },
   btn: { height: 52 },
 });

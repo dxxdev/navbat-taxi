@@ -5,6 +5,7 @@ import { supabase } from "@/core/supabase";
 import type { Tables } from "@/types/database";
 
 export type Profile = Tables<"profiles">;
+export const PROFILE_QUERY_KEY = ["profile"] as const;
 
 /** O'z profilingiz. role null bo'lishi mumkin (rol hali tanlanmagan). */
 export function useProfile() {

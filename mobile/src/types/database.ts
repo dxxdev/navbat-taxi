@@ -229,7 +229,9 @@ isOneToOne: false
             [_ in never]: never
           }
           Functions: {
-            [_ in never]: never
+            "register_profile":
+{ Args: { "p_full_name": string,"p_role": string }; Returns: Json
+                           }
           }
           Enums: {
             [_ in never]: never

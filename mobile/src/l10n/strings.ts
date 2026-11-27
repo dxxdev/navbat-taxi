@@ -39,6 +39,32 @@ export const strings = {
   dev: {
     hint: "Sinov rejimi: raqam +998 90 123 45 67, kod 123456",
   },
+  // Rollar uchun
+  role: {
+    title: "Rolni tanlang",
+    subtitle: "Ilovadan qanday foydalanishingizni belgilang",
+    nameLabel: "Ism va familiya",
+    nameHelper: "2 dan 60 gacha belgi",
+    passengerCard: "Men yo'lovchiman",
+    passengerHint: "Navbatdagi mashinalardan o'rindiq band qilaman",
+    driverCard: "Men haydovchiman",
+    driverHint: "Vokzalda navbatga yozilaman",
+    warning: "Rolni keyin o'zgartirib bo'lmaydi",
+    continue: "Davom etish",
+    confirmTitle: "Tanlovni tasdiqlaysizmi?",
+    confirmPassenger: "Siz yo'lovchi sifatida ro'yxatdan o'tasiz.",
+    confirmDriver: "Siz haydovchi sifatida ro'yxatdan o'tasiz.",
+    confirm: "Tasdiqlash",
+    cancel: "Bekor qilish",
+  },
+  passenger: {
+    welcome: (name: string) => `Xush kelibsiz, ${name}`,
+    signOut: "Chiqish",
+  },
+  driver: {
+    registerPlaceholder:
+      "Haydovchi ro'yxatdan o'tishi keyingi qismda qo'shiladi",
+  },
   // Xato kodlari (bazadagi PT-xatolar message qiymati) + mijoz xatolari
   errors: {
     UNAUTHENTICATED: "Davom etish uchun tizimga kiring",
@@ -50,13 +76,14 @@ export const strings = {
     PLATE_TAKEN: "Bu davlat raqami allaqachon ro'yxatdan o'tgan",
     ALREADY_IN_QUEUE: "Siz allaqachon navbatdasiz",
     SEATS_UNAVAILABLE: "Yetarli bo'sh o'rindiq qolmadi",
-    NO_FREE_SEAT_FOR_INCREMENT: "Bo'sh o'rindiq yo'q, o'rindiq qo'shib bo'lmaydi",
+    NO_FREE_SEAT_FOR_INCREMENT:
+      "Bo'sh o'rindiq yo'q, o'rindiq qo'shib bo'lmaydi",
     ALREADY_HAS_ACTIVE_BOOKING: "Sizda allaqachon faol band bor",
     ENTRY_NOT_BOOKABLE: "Bu mashinadan hozir o'rindiq band qilib bo'lmaydi",
     BOOKING_EXPIRED: "Band muddati tugagan",
     ACTIVE_BOOKINGS_PENDING: "Avval faol bandlar yakunlanishi kerak",
-    INVALID_ROLE: "Rol noto'g'ri tanlangan",
-    INVALID_NAME: "Ism noto'g'ri kiritilgan",
+    INVALID_ROLE: "Rol noto'g'ri tanlandi",
+    INVALID_NAME: "Ism 2 dan 60 gacha belgidan iborat bo'lishi kerak",
     SEATS_INVALID: "O'rindiqlar soni noto'g'ri",
     FARE_OUT_OF_RANGE: "Narx ruxsat etilgan oraliqdan tashqarida",
     WAIT_TIME_NOT_ALLOWED: "Bu kutish vaqti ruxsat etilmagan",

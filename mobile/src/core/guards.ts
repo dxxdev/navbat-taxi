@@ -1,65 +1,54 @@
-import type { Session } from "@supabase/supabase-js";
+// Marshrut himoyasi: sessiya va profil holatiga qarab qayerga yo'naltirishni hisoblaydi.
+// Toza funksiya: router'dan mustaqil, oson test qilinadi.
 
-import type { Tables } from "@/types/database";
+export const LOGIN_ROUTE = "/(auth)/login"; // 5-qismdagi kirish ekrani yo'liga moslang
+export const ROLE_ROUTE = "/(onboarding)/role";
+export const PASSENGER_HOME = "/passenger";
+export const DRIVER_ENTRY = "/driver/register"; // haydovchi ro'yxatdan o'tishi keyingi qismda
 
-type GuardProfile = Pick<Tables<"profiles">, "role">;
+export type GuardProfile = { role: string | null } | null | undefined;
 
-export const ROUTES = {
-  login: "/login",
-  otp: "/otp",
-  role: "/role",
-  passenger: "/passenger",
-  driver: "/driver",
-} as const;
-
-export type ResolveRedirectInput = {
-  session: Session | null;
-  /** null — profil hali yo'q/yuklanmagan (chaqiruvchi yuklanishni o'zi hal qiladi) */
-  profile: GuardProfile | null;
-  pathname: string;
+export type GuardInput = {
+  segments: string[]; // useSegments() natijasi
+  hasSession: boolean;
+  sessionLoading: boolean;
+  profile: GuardProfile; // undefined = hali yuklanmagan
 };
 
-function normalize(pathname: string): string {
-  const p = pathname.split("?")[0].replace(/\/+$/, "");
-  return p === "" ? "/" : p;
-}
+// null = joyida qol, aks holda shu yo'lga o'tkaz
+export function getGuardRedirect({
+  segments,
+  hasSession,
+  sessionLoading,
+  profile,
+}: GuardInput): string | null {
+  if (sessionLoading) return null;
 
-function isUnder(pathname: string, base: string): boolean {
-  return pathname === base || pathname.startsWith(base + "/");
-}
+  const group = segments[0];
+  const inAuth = group === "(auth)";
+  const inOnboarding = group === "(onboarding)";
+  const inPassenger = group === "passenger";
+  const inDriver = group === "driver";
 
-/**
- * Joriy holat uchun qayerga yo'naltirish kerakligini qaytaradi.
- * null — yo'naltirish kerak emas (foydalanuvchi to'g'ri joyda).
- * Toza funksiya: hech qanday hook yoki tarmoq chaqiruvi yo'q.
- */
-export function resolveRedirect({ session, profile, pathname }: ResolveRedirectInput): string | null {
-  const path = normalize(pathname);
-
-  // 1) Sessiya yo'q: faqat kirish ekranlari ochiq
-  if (!session) {
-    const isPublic = isUnder(path, ROUTES.login) || isUnder(path, ROUTES.otp);
-    return isPublic ? null : ROUTES.login;
+  if (!hasSession) {
+    return inAuth ? null : LOGIN_ROUTE;
   }
 
-  // Profil hali yo'q: bu yerda qaror qilmaymiz
-  if (!profile) return null;
+  // Profil hali yuklanmagan: kutamiz
+  if (profile === undefined) return null;
 
-  // 2) Rol tanlanmagan
-  if (profile.role === null) {
-    return isUnder(path, ROUTES.role) ? null : ROUTES.role;
+  // Profil qatori yo'q (g'ayritabiiy holat): kirish ekranida qoldiramiz
+  if (profile === null) return inAuth ? null : LOGIN_ROUTE;
+
+  switch (profile.role) {
+    case null:
+      return inOnboarding ? null : ROLE_ROUTE;
+    case "passenger":
+      return inPassenger ? null : PASSENGER_HOME;
+    case "driver":
+      return inDriver ? null : DRIVER_ENTRY;
+    default:
+      // dispatcher/admin prototipda yo'q
+      return null;
   }
-
-  // 3) Yo'lovchi
-  if (profile.role === "passenger") {
-    return isUnder(path, ROUTES.passenger) ? null : ROUTES.passenger;
-  }
-
-  // 4) Haydovchi (holati — haydovchi qismida kengaytiriladi)
-  if (profile.role === "driver") {
-    return isUnder(path, ROUTES.driver) ? null : ROUTES.driver;
-  }
-
-  // dispatcher/admin: prototipda ilova ekrani yo'q
-  return null;
 }
