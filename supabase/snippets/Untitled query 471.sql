@@ -1,0 +1,1 @@
+update public.profiles set role = 'driver' where phone = '998901234567';
