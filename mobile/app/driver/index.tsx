@@ -1,19 +1,17 @@
-import { Button, Text } from "react-native-paper";
+import { StyleSheet, View } from "react-native";
+import { Text } from "react-native-paper";
 
-import { Screen } from "@/components/Screen";
-import { useSession } from "@/core/auth";
 import { strings } from "@/l10n/strings";
 
-// Placeholder
-export default function DriverHome() {
-  const { signOut } = useSession();
+// Hozircha placeholder: haydovchi bosh sahifasi keyingi qismda.
+export default function DriverHomeScreen() {
   return (
-    <Screen>
-      <Text variant="headlineMedium">{strings.placeholders.driverTitle}</Text>
-      <Text variant="bodyMedium">{strings.placeholders.driverBody}</Text>
-      <Button mode="outlined" contentStyle={{ height: 52 }} onPress={signOut}>
-        {strings.common.signOut}
-      </Button>
-    </Screen>
+    <View style={styles.center}>
+      <Text variant="bodyLarge">{strings.driver.homePlaceholder}</Text>
+    </View>
   );
 }
+
+const styles = StyleSheet.create({
+  center: { flex: 1, alignItems: "center", justifyContent: "center", padding: 16 },
+});

@@ -1,6 +1,8 @@
 // Marshrut himoyasi: sessiya va profil holatiga qarab qayerga yo'naltirishni hisoblaydi.
 // Toza funksiya: router'dan mustaqil, oson test qilinadi.
 
+import { MyDriver } from "@/data/driver";
+
 export const LOGIN_ROUTE = "/(auth)/login"; // 5-qismdagi kirish ekrani yo'liga moslang
 export const ROLE_ROUTE = "/(onboarding)/role";
 export const PASSENGER_HOME = "/passenger";
@@ -51,4 +53,21 @@ export function getGuardRedirect({
       // dispatcher/admin prototipda yo'q
       return null;
   }
+}
+
+export function getDriverRedirect(pathname: string, driver: MyDriver | undefined): string | null {
+  if (driver === undefined) return null; // hali yuklanmoqda
+
+  let target: string;
+  if (driver === null) target = "/driver/register";
+  else if (driver.status === "approved") target = "/driver";
+  else target = "/driver/status"; // pending | blocked
+
+  // approved bo'lsa /driver ichidagi barcha ichki sahifalar ruxsat etiladi
+  if (target === "/driver") {
+    return pathname === "/driver" || pathname.startsWith("/driver/") && pathname !== "/driver/register" && pathname !== "/driver/status"
+      ? null
+      : target;
+  }
+  return pathname === target ? null : target;
 }

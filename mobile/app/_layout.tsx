@@ -3,7 +3,7 @@ import {
   QueryClientProvider,
   useQueryClient,
 } from "@tanstack/react-query";
-import { Redirect, Stack, useSegments, type Href } from "expo-router";
+import { Redirect, Stack, useRouter, useSegments, type Href } from "expo-router";
 import * as SplashScreen from "expo-splash-screen";
 import { useEffect, useState } from "react";
 import { StyleSheet, View } from "react-native";
@@ -12,13 +12,32 @@ import { Button, PaperProvider, Text, useTheme } from "react-native-paper";
 import { LoadingView } from "@/components/LoadingView";
 import { SnackbarProvider } from "@/components/SnackbarProvider";
 import { AuthProvider, useSession } from "@/core/auth";
-import { getGuardRedirect } from "@/core/guards";
+import { getDriverRedirect, getGuardRedirect } from "@/core/guards";
 import { theme } from "@/core/theme";
 import { useProfile } from "@/data/profile";
 import { strings } from "@/l10n/strings";
+import { useMyDriver } from "@/data/driver";
 
 // Sessiya va profil tayyor bo'lguncha native splash ko'rinib turadi
 SplashScreen.preventAutoHideAsync();
+
+// Haydovchi yo'naltirishi: Provider'lar ichida ishlashi uchun alohida komponent.
+function DriverGuard() {
+  const router = useRouter();
+  const segments = useSegments();
+  const { data: profile } = useProfile(); // useProfile qaytarishiga qarab moslang
+  const isDriver = profile?.role === "driver";
+  const { data: driver } = useMyDriver(isDriver);
+  const pathname = "/" + segments.join("/");
+
+  useEffect(() => {
+    if (!isDriver) return;
+    const to = getDriverRedirect(pathname, driver);
+    if (to) router.replace(to as Href);
+  }, [isDriver, driver, pathname, router]);
+
+  return null;
+}
 
 export default function RootLayout() {
   const [queryClient] = useState(() => new QueryClient());
@@ -30,6 +49,7 @@ export default function RootLayout() {
           <SnackbarProvider>
             <Gate />
           </SnackbarProvider>
+          <DriverGuard/>
         </AuthProvider>
       </QueryClientProvider>
     </PaperProvider>

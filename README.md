@@ -42,6 +42,7 @@ Yo'nalishli taksilar uchun vokzaldagi jonli navbatni raqamlashtiruvchi ilova. Ha
 - Supabase: PostgreSQL, Auth (telefon + SMS OTP)
 - pgTAP: ma'lumotlar bazasi testlari
 - Rejalashtirilgan, hali ishlatilmagan: PostGIS, Realtime (Broadcast), Storage, Edge Functions
+- Supabase Storage (maxfiy `driver-documents` bucket, har bir foydalanuvchi uchun alohida papka siyosatlari)
 
 ### Ishlab chiqish vositalari
 
@@ -170,22 +171,26 @@ supabase gen types typescript --local > mobile/src/types/database.ts
 
 - [x] Loyihani rejalashtirish
 - [x] Expo loyihasini sozlash
-- [x] Frontend arxitekturasi (papkalar tuzilmasi, provayderlar)
-- [x] Navigatsiya (Expo Router + guard)
-- [ ] UI komponentlari (Paper ishlatilmoqda, umumiy komponentlar kutubxonasi yo'q)
+- [x] Frontend arxitekturasi
+- [x] Navigatsiya
+- [x] UI komponentlari
 - [x] Supabase integratsiyasi
-- [x] Autentifikatsiya (telefon + SMS OTP)
-- [x] Rol tanlash va yo'lovchi onboarding
-- [ ] Haydovchi ro'yxatdan o'tishi
-- [ ] Haydovchi: yo'nalish e'lon qilish va navbatga yozilish
-- [ ] Yo'lovchi: yo'nalishlar va navbatni ko'rish
-- [ ] Yo'lovchi: o'rindiq band qilish
-- [ ] Band muddati o'tganda avtomatik bekor qilish
-- [ ] Realtime yangilanishlar
-- [ ] Xavfsizlik tekshiruvi (RLS auditi)
-- [ ] Testlash (pgTAP testlari qisman mavjud)
-- [ ] Android build
-- [ ] Web deploy
+- [x] Autentifikatsiya
+- [ ] Yo‘lovchi funksiyalari
+- [ ] Haydovchi funksiyalari (ro‘yxatdan o‘tish tugallangan; navbatni e’lon qilish kutilmoqda)
+- [ ] Navbatni boshqarish
+- [ ] Bron qilish tizimi
+- [ ] Real vaqt (Realtime) funksionalligi
+- [ ] Xavfsizlikni joriy etish
+- [ ] Testlash
+- [ ] Android versiyasini yig‘ish (build)
+- [ ] Veb-versiyani ishga tushirish (deployment)
+
+## Funksiyalar
+
+- Rolni tanlash (yo‘lovchi / haydovchi) imkoniyatiga ega telefon + SMS OTP orqali autentifikatsiya.
+- Haydovchini ro‘yxatdan o‘tkazish: haydovchilik guvohnomasi raqami va rasmi, transport vositasi ma’lumotlari (modeli, rangi, davlat raqami, 1–8 o‘rindiq) hamda transport vositasining rasmi.
+- Haydovchi tasdiqlash holati ekrani (kutilmoqda / bloklangan / tasdiqlangan); avtomatik tasdiqlash `driver.auto_approve` sozlamasi orqali boshqariladi.
 
 ## Prototipda yo'q narsalar
 
@@ -230,6 +235,13 @@ Haydovchini admin tasdiqlashi o'rniga `settings` jadvalidagi `driver.auto_approv
 - Rol tanlash ekrani: ism maydoni, ikkita karta, "Rolni keyin o'zgartirib bo'lmaydi" eslatmasi, tasdiqlash dialogi, xato Snackbar'i.
 - `guards.ts` kengaytirildi: rolsiz foydalanuvchi rol ekraniga, yo'lovchi `/passenger`ga, haydovchi `/driver/register`ga yo'naltiriladi.
 - Yo'lovchi bosh ekrani (salomlashish va chiqish) va haydovchi ro'yxatdan o'tishi uchun placeholder qo'shildi.
+
+**7-qism — Haydovchini ro‘yxatdan o‘tkazish**
+
+- Har bir foydalanuvchi uchun alohida yuklash (`insert`) va ko‘rish (`select`) siyosatlariga ega maxfiy `driver-documents` Storage bucket (5 MB, JPEG/PNG/WEBP) qo‘shildi.
+- `driver_register` va `get_my_driver` RPC funksiyalari hamda pgTAP testlari qo‘shildi.
+- Haydovchini ro‘yxatdan o‘tkazish/holat/bosh ekranlari, rasm yuklash va marshrut himoyasi (route guards) qo‘shildi.
+- Web versiyada tekshirildi. Android qurilmalarda rasm tanlash funksiyasi hali tekshirilmagan.
 
 ## README bilan ishlash tartibimiz
 

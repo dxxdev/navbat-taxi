@@ -62,18 +62,46 @@ export const strings = {
     signOut: "Chiqish",
   },
   driver: {
-    registerPlaceholder:
-      "Haydovchi ro'yxatdan o'tishi keyingi qismda qo'shiladi",
+    registerTitle: "Haydovchi ma'lumotlari",
+    licenseNumber: "Haydovchilik guvohnomasi raqami",
+    licensePhoto: "Guvohnoma rasmi",
+    vehicleModel: "Mashina rusumi",
+    vehicleColor: "Mashina rangi",
+    plateNumber: "Davlat raqami",
+    seatsTotal: "Yo'lovchi o'rindiqlari soni",
+    vehiclePhoto: "Mashina rasmi",
+    choosePhoto: "Rasm tanlash",
+    changePhoto: "Rasmni almashtirish",
+    submit: "Yuborish",
+    submitting: "Yuklanmoqda...",
+    fillAll: "Barcha maydonlarni to'ldiring va ikkala rasmni tanlang.",
+    photoPermissionDenied:
+      "Rasm tanlash uchun galereyaga ruxsat kerak. Sozlamalardan ruxsat bering.",
+    uploadFailed:
+      "Rasmni yuklab bo'lmadi. Internetni tekshirib, qayta urinib ko'ring.",
+    uploadBadType: "Faqat JPG, PNG yoki WEBP rasm yuklash mumkin.",
+    uploadTooLarge: "Rasm hajmi 5 MB dan oshmasligi kerak.",
+    statusPendingTitle: "Tasdiq kutilmoqda",
+    statusPendingText:
+      "Ma'lumotlaringiz qabul qilindi. Administrator tasdiqlagach, ish boshlashingiz mumkin.",
+    statusBlockedTitle: "Hisob bloklangan",
+    statusBlockedText:
+      "Hisobingiz bloklangan. Batafsil ma'lumot uchun qo'llab-quvvatlash xizmatiga murojaat qiling.",
+    refresh: "Yangilash",
+    homePlaceholder: "Haydovchi bosh sahifasi (keyingi qismda).",
+    loading: "Yuklanmoqda...",
   },
   // Xato kodlari (bazadagi PT-xatolar message qiymati) + mijoz xatolari
   errors: {
+    FORBIDDEN: "Bu amalga ruxsat yo'q.",
+    PROFILE_EXISTS: "Siz allaqachon ro'yxatdan o'tgansiz.",
+    PLATE_TAKEN: "Bu davlat raqami allaqachon ro'yxatdan o'tgan.",
+    SEATS_INVALID: "O'rindiqlar soni 1 dan 8 gacha bo'lishi kerak.",
+    INVALID_NAME: "Ma'lumotlar noto'g'ri yoki to'liq emas.",
     UNAUTHENTICATED: "Davom etish uchun tizimga kiring",
-    FORBIDDEN: "Bu amalni bajarishga ruxsat yo'q",
     DRIVER_NOT_APPROVED: "Haydovchi hisobingiz hali tasdiqlanmagan",
     OUTSIDE_STATION_AREA: "Siz vokzal hududidan tashqaridasiz",
     NOT_FOUND: "Ma'lumot topilmadi",
-    PROFILE_EXISTS: "Profil allaqachon yaratilgan",
-    PLATE_TAKEN: "Bu davlat raqami allaqachon ro'yxatdan o'tgan",
     ALREADY_IN_QUEUE: "Siz allaqachon navbatdasiz",
     SEATS_UNAVAILABLE: "Yetarli bo'sh o'rindiq qolmadi",
     NO_FREE_SEAT_FOR_INCREMENT:
@@ -83,8 +111,6 @@ export const strings = {
     BOOKING_EXPIRED: "Band muddati tugagan",
     ACTIVE_BOOKINGS_PENDING: "Avval faol bandlar yakunlanishi kerak",
     INVALID_ROLE: "Rol noto'g'ri tanlandi",
-    INVALID_NAME: "Ism 2 dan 60 gacha belgidan iborat bo'lishi kerak",
-    SEATS_INVALID: "O'rindiqlar soni noto'g'ri",
     FARE_OUT_OF_RANGE: "Narx ruxsat etilgan oraliqdan tashqarida",
     WAIT_TIME_NOT_ALLOWED: "Bu kutish vaqti ruxsat etilmagan",
     // Auth va mijoz xatolari

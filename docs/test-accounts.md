@@ -52,3 +52,28 @@ Agar `driver.auto_approve = false` bo'lsa, haydovchini
 - `docs/sql-snippets/approve_driver.sql` — haydovchini tasdiqlash
 - `docs/sql-snippets/insert_booking.sql` — qo'lda band yaratish
 - `docs/sql-snippets/expire_booking_now.sql` — band muddatini o'tmishga surish
+
+## Haydovchi tasdiqlash rejimi (driver.auto_approve)
+
+Prototipda admin paneli yo'q, tasdiqlash `settings` kaliti orqali boshqariladi.
+
+**Avtomatik tasdiqni o'chirish** (yangi haydovchilar `pending` bo'ladi):
+
+```sql
+update public.settings set value = 'false'::jsonb, updated_at = now()
+ where key = 'driver.auto_approve';
+```
+
+**Yoqish** (yangi haydovchilar darhol `approved`):
+
+```sql
+update public.settings set value = 'true'::jsonb, updated_at = now()
+ where key = 'driver.auto_approve';
+```
+
+Eslatma: kalit faqat YANGI ro'yxatdan o'tishlarga ta'sir qiladi. Allaqachon `pending`
+bo'lganlarni `docs/sql-snippets/approve_driver.sql` orqali tasdiqlang; ilovada status
+ekranidagi "Yangilash" tugmasi holatni qayta o'qiydi.
+
+Tekshirish ketma-ketligi: auto_approve=false -> haydovchi sifatida ro'yxatdan o'ting ->
+"Tasdiq kutilmoqda" ekrani -> approve_driver.sql -> "Yangilash" -> /driver ochiladi.

@@ -311,6 +311,7 @@
       // Sinov raqami (kalit: kod bilan, "+" belgisiz)
       "test_otp": {
         "998901234567": "123456",
+        "998123456789": "123456",
       },
 
       // Sinov raqamlar uchun ham provayder yoqilgan bo'lishi shart.

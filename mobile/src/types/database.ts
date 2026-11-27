@@ -229,7 +229,13 @@ isOneToOne: false
             [_ in never]: never
           }
           Functions: {
-            "register_profile":
+            "driver_register":
+{ Args: { "p_license_number": string,"p_license_photo_path": string,"p_vehicle": Json }; Returns: Json
+                           },
+"get_my_driver":
+{ Args: Record<PropertyKey, never>; Returns: Json
+                           },
+"register_profile":
 { Args: { "p_full_name": string,"p_role": string }; Returns: Json
                            }
           }
