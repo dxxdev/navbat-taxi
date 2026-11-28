@@ -1,257 +1,205 @@
 # NavbatTaksi
 
-Yo'nalishli taksilar uchun vokzaldagi jonli navbatni raqamlashtiruvchi ilova. Haydovchi vokzalda yo'nalishi va bo'sh o'rindiqlarini e'lon qilib navbatga yoziladi. Yo'lovchi vokzalga kelmasdan navbatdagi mashinalarni ko'radi va o'rindiq band qiladi. Belgilangan vaqtda kelmasa, band avtomatik bekor bo'ladi va o'rindiq boshqalarga ochiladi.
+Yo'nalishli taksilar uchun vokzaldagi jonli navbatni raqamlashtiruvchi ilova. Haydovchi navbatga yoziladi, yo'lovchi vokzalga kelmasdan o'rindiq band qiladi, belgilangan vaqtda kelmasa band avtomatik bekor bo'ladi.
 
-> **Holat:** xomaki prototip (proof of concept), ishlab chiqish jarayonida.
+## Loyiha haqida
 
-## Prototipning 4 ta asosiy funksiyasi
+> Holat: xomaki prototip (proof of concept), ishlab chiqish jarayonida.
 
-| # | Funksiya | Holat |
-|---|---|---|
-| 1 | Rollarga bo'lingan ro'yxatdan o'tish (yo'lovchi / haydovchi) | Yo'lovchi qismi tayyor, haydovchi qismi keyingi bosqichda |
-| 2 | Haydovchi bo'sh o'rinlari va yo'nalishini e'lon qilishi (navbatga yozilish) | Hali yozilmagan |
-| 3 | Yo'lovchi navbatdagi mashinadan o'rindiq band qilishi | Hali yozilmagan |
-| 4 | Vaqtida kelmagan yo'lovchining bandini avtomatik bekor qilish | Hali yozilmagan |
+Prototip 4 ta asosiy funksiyadan iborat:
 
-## Hozir ishlaydigan imkoniyatlar
+1. Rollarga bo'lingan ro'yxatdan o'tish (yo'lovchi / haydovchi).
+2. Haydovchi yo'nalishi va bo'sh o'rinlarini e'lon qilishi (navbatga yozilishi).
+3. Yo'lovchi navbatdagi mashinadan o'rindiq band qilishi.
+4. Yo'lovchi vaqtida kelmasa, bandning avtomatik bekor qilinishi.
 
-- Telefon raqami + SMS OTP orqali kirish (Supabase Auth).
-- Rol tanlash (yo'lovchi / haydovchi): ism kiritiladi, rol **bir marta** tanlanadi va keyin o'zgartirilmaydi. Tanlov tasdiqlash dialogi orqali tasdiqlanadi.
-- Sessiya va profil holatiga qarab avtomatik yo'naltirish (guard):
-  - sessiya yo'q: kirish ekrani
-  - rol tanlanmagan: rol tanlash ekrani
-  - yo'lovchi: `/passenger`
-  - haydovchi: `/driver/register` (hozircha placeholder)
-- Yo'lovchi bosh ekrani: "Xush kelibsiz, {ism}" va chiqish tugmasi.
-- Web'da ham, Android'da ham ishlaydi (kontent kengligi 600 px bilan cheklangan).
+## Foydalanuvchi rollari
 
-## Tech Stack
+Bir hisob = bitta rol (ro'yxatdan o'tishda tanlanadi).
 
-### Mijoz (`mobile/`)
+### Yo'lovchi
 
-- React Native + Expo (SDK 58), TypeScript (strict)
-- Expo Router: fayl asosidagi navigatsiya
-- React Native Paper: Material 3 komponentlari (Dialog, Snackbar, Button va boshqalar)
-- TanStack Query: server holati
-- `@expo/vector-icons`: ikonkalar
-- `@react-native-async-storage/async-storage`: sessiyani saqlash
+- Navbatdagi mashinalarni ko'rish.
+- O'rindiq band qilish va kutish vaqtini tanlash.
+- Bandni "Keldi" deb tasdiqlash yoki bekor qilish.
+
+### Haydovchi
+
+- Mashina va haydovchilik ma'lumotlarini ro'yxatdan o'tkazish.
+- Yo'nalish, o'rindiqlar soni va narxni belgilab navbatga yozilish.
+- Navbatdan chiqish yoki "Yo'lga chiqdim" tugmasini bosish.
+
+## Texnologiyalar
+
+### Mijoz
+
+- React Native (Expo), TypeScript (strict)
+- Expo Router
+- TanStack Query (server holati)
+- React Native Paper (Material 3)
 - Platformalar: Android va Web
 
-### Backend (`supabase/`)
+### Backend
 
-- Supabase: PostgreSQL, Auth (telefon + SMS OTP)
-- pgTAP: ma'lumotlar bazasi testlari
-- Rejalashtirilgan, hali ishlatilmagan: PostGIS, Realtime (Broadcast), Storage, Edge Functions
-- Supabase Storage (maxfiy `driver-documents` bucket, har bir foydalanuvchi uchun alohida papka siyosatlari)
+- Supabase: PostgreSQL + PostGIS
+- Supabase Auth (telefon + SMS OTP)
+- Supabase Realtime (Broadcast), Storage, Edge Functions (Deno)
+- Barcha amallar PostgreSQL funksiyalari (RPC) orqali: `security definer`, `search_path = ''`
 
 ### Ishlab chiqish vositalari
 
 - Git, GitHub, Visual Studio Code
 - Supabase CLI + Docker (lokal baza)
+- pgTAP (baza testlari)
 
-## Arxitektura qoidalari
+## Loyiha holati
 
-1. Barcha amallar PostgreSQL funksiyalari (RPC) orqali bajariladi: `plpgsql`, `security definer`, `set search_path = ''`. Funksiya ichida `auth.uid()` va rol tekshiriladi.
-2. Har bir funksiyada `revoke execute ... from public, anon`, so'ng faqat kerakli rolga `grant`.
-3. `public` sxemadagi har bir jadvalda RLS yoqilgan. Mijoz jadvallarga to'g'ridan-to'g'ri yozmaydi (profil ismi va tili bundan mustasno).
-4. Baza o'zgarishi faqat yangi migratsiya fayli orqali (`supabase migration new <nom>`). Mavjud migratsiya tahrirlanmaydi.
-5. Xatolar `raise exception using errcode = 'PT409', message = 'KOD'` ko'rinishida. Mijozda ular o'zbekcha matnga o'giriladi (`mobile/src/core/errors.ts`).
-6. Matnlar faqat o'zbekcha (lotin) va hammasi bitta faylda: `mobile/src/l10n/strings.ts`.
-7. Vaqt UTC'da saqlanadi (ilova Asia/Tashkent bo'yicha ko'rsatadi). Pul butun son, so'mda.
-
-## Ma'lumotlar bazasi RPC funksiyalari
-
-| Funksiya | Kim chaqiradi | Vazifasi |
-|---|---|---|
-| `register_profile(p_role, p_full_name)` | `authenticated` | Rolni (`passenger` / `driver`) bir marta tanlaydi va ismni saqlaydi. Xatolar: `UNAUTHENTICATED`, `INVALID_ROLE`, `INVALID_NAME`, `PROFILE_EXISTS`, `NOT_FOUND` |
-
-Boshqa funksiyalar (navbat, band qilish va hokazo) keyingi bosqichlarda qo'shiladi.
-
-## Loyiha tuzilmasi
-
-```
-navbat-taksi/
-  mobile/                    React Native (Expo) ilova
-    app/                     Expo Router marshrutlari
-      _layout.tsx            ildiz layout: provayderlar va guard (Gate)
-      (auth)/                kirish ekranlari
-      (onboarding)/role.tsx  rol tanlash ekrani
-      passenger/index.tsx    yo'lovchi bosh ekrani
-      driver/register.tsx    haydovchi ro'yxatdan o'tishi (placeholder)
-    src/
-      core/                  supabase mijozi, guards.ts, errors.ts
-      data/                  server so'rovlari (useProfile va boshqalar)
-      features/onboarding/   useRegisterProfile
-      l10n/strings.ts        barcha o'zbekcha matnlar
-      types/database.ts      Supabase'dan generatsiya qilingan turlar
-  supabase/
-    config.toml
-    migrations/              faqat yangi fayl qo'shiladi
-    tests/database/          pgTAP testlari
-    seed.sql
-  docs/                      hujjatlar (docs/sql-snippets/ — qo'lda ishlatiladigan SQL'lar)
-  scripts/
-```
+- [x] Loyihani rejalashtirish
+- [x] Expo loyihasini sozlash
+- [x] Baza sxemasi va RLS
+- [x] Profil va rolni tanlash (RPC: `register_profile`)
+- [x] Haydovchini ro'yxatdan o'tkazish (RPC: `driver_register`, `get_my_driver`)
+- [x] Haydovchi navbati (RPC: `driver_join_queue`, `driver_leave_queue`, `driver_depart`)
+- [x] Haydovchi navbati uchun pgTAP testlari
+- [ ] Yo'lovchi uchun navbatni ko'rish (RPC: `get_route_queue`)
+- [ ] O'rindiq band qilish (`book_seat`) va "Keldi" tasdig'i
+- [ ] Bandlarning avtomatik bekor bo'lishi (cron)
+- [ ] Mijoz arxitekturasi va navigatsiya
+- [ ] Ro'yxatdan o'tish va kirish ekranlari
+- [ ] Yo'lovchi ekranlari
+- [ ] Haydovchi ekranlari
+- [ ] Realtime yangilanishlar
+- [ ] Xavfsizlik tekshiruvi
+- [ ] Yuklama testi
+- [ ] Android build
+- [ ] Web deploy
 
 ## Ishga tushirish
 
 ### Talablar
 
-- Node.js (LTS, Expo SDK 58 talabiga mos versiya)
+- Node.js (LTS)
 - npm
 - Git
-- Docker (lokal Supabase uchun)
+- Docker
 - Supabase CLI
 
 ### O'rnatish
+
+Repozitoriyni yuklab oling:
 
 ```bash
 git clone https://github.com/dxxdev/navbat-taxi.git
 cd navbat-taxi
 ```
 
-Lokal bazani ishga tushirish:
-
-```bash
-supabase start
-supabase db reset
-```
-
-Ilova bog'liqliklarini o'rnatish:
+Mijoz bog'liqliklarini o'rnating:
 
 ```bash
 cd mobile
 npm install
 ```
 
-Yangi paket qo'shishda doim `npx expo install <paket>` ishlating (Expo SDK'ga mos versiya tanlanadi).
-
-### Muhit o'zgaruvchilari
-
-`mobile/.env.local` faylini yarating (git'ga tushmaydi):
-
-```
-EXPO_PUBLIC_SUPABASE_URL=http://127.0.0.1:54321
-EXPO_PUBLIC_SUPABASE_PUBLISHABLE_KEY=<supabase status chiqargan publishable kalit>
-```
-
-`EXPO_PUBLIC_` bilan boshlanadigan qiymatlar ilova bundle'iga tushadi, shuning uchun bu yerga hech qachon secret kalit qo'yilmaydi. Secret kalitlar va service role kalitlari repozitoriyga tushmaydi.
-
-Android emulyatorida URL `http://10.0.2.2:54321` bo'lishi mumkin. Haqiqiy qurilmada kompyuterning lokal IP manzilidan foydalaning.
-
-### Ishga tushirish
+Lokal bazani ishga tushiring (Docker yoqilgan bo'lishi kerak):
 
 ```bash
-cd mobile
-npx expo start --web       # Web
-npx expo start --android   # Android
+supabase start
+supabase db reset
 ```
 
-### Tekshiruvlar
+Baza testlarini yurgizing:
 
 ```bash
-# Baza testlari (pgTAP)
 supabase test db
-
-# Mijoz: lint va tur tekshiruvi
-cd mobile
-npx expo lint
-npx tsc --noEmit
 ```
 
-### Turlarni yangilash
-
-Har bir migratsiyadan keyin:
+Turlarni yangilang (har bir migratsiyadan keyin):
 
 ```bash
 supabase gen types typescript --local > mobile/src/types/database.ts
 ```
 
-## Project Status
+Ilovani ishga tushiring:
 
-- [x] Loyihani rejalashtirish
-- [x] Expo loyihasini sozlash
-- [x] Frontend arxitekturasi
-- [x] Navigatsiya
-- [x] UI komponentlari
-- [x] Supabase integratsiyasi
-- [x] Autentifikatsiya
-- [ ] Yo‘lovchi funksiyalari
-- [ ] Haydovchi funksiyalari (ro‘yxatdan o‘tish tugallangan; navbatni e’lon qilish kutilmoqda)
-- [ ] Navbatni boshqarish
-- [ ] Bron qilish tizimi
-- [ ] Real vaqt (Realtime) funksionalligi
-- [ ] Xavfsizlikni joriy etish
-- [ ] Testlash
-- [ ] Android versiyasini yig‘ish (build)
-- [ ] Veb-versiyani ishga tushirish (deployment)
+```bash
+cd mobile
+npx expo start
+npx expo start --web
+```
 
-## Funksiyalar
+### Muhit o'zgaruvchilari
 
-- Rolni tanlash (yo‘lovchi / haydovchi) imkoniyatiga ega telefon + SMS OTP orqali autentifikatsiya.
-- Haydovchini ro‘yxatdan o‘tkazish: haydovchilik guvohnomasi raqami va rasmi, transport vositasi ma’lumotlari (modeli, rangi, davlat raqami, 1–8 o‘rindiq) hamda transport vositasining rasmi.
-- Haydovchi tasdiqlash holati ekrani (kutilmoqda / bloklangan / tasdiqlangan); avtomatik tasdiqlash `driver.auto_approve` sozlamasi orqali boshqariladi.
+Mijozda `mobile/.env.local` fayli ishlatiladi:
 
-## Prototipda yo'q narsalar
+```
+EXPO_PUBLIC_SUPABASE_URL=...
+EXPO_PUBLIC_SUPABASE_PUBLISHABLE_KEY=...
+```
+
+`EXPO_PUBLIC_` qiymatlari bundle ichiga tushadi. Shuning uchun faqat publishable kalit qo'yiladi. Secret kalitlar, tokenlar va service role kalitlari kodga va repozitoriyga hech qachon kiritilmaydi.
+
+## Loyiha tuzilmasi
+
+```
+navbat-taxi/
+  mobile/     React Native (Expo): app/ (marshrutlar), src/{core,l10n,data,features,components,types}
+  supabase/   config.toml, migrations/, functions/, tests/database/, tests/load/, seed.sql
+  docs/       qo'lda ishlatiladigan SQL'lar (docs/sql-snippets/)
+  scripts/    yordamchi skriptlar
+```
+
+## Baza qoidalari (qisqacha)
+
+- Navbat tartibi saqlanmaydi, `row_number() over (partition by route_id order by joined_at, id)` bilan hisoblanadi (faqat `active` yozuvlar orasida). Shuning uchun haydovchi chiqqanda navbat o'zi siljiydi.
+- Qulflash tartibi doim: avval `queue_entries`, keyin `bookings`.
+- Bir yo'lovchida bir vaqtda 1 ta faol band, haydovchi bir vaqtda 1 ta faol navbatda.
+- Haydovchi "Yo'lga chiqdim" yoki "Navbatdan chiqish" bossa, uning faol bandlari bekor qilinadi va yo'lovchilarga xabar yoziladi.
+- Xato kodlari `PT<HTTP kodi>` ko'rinishida (masalan `PT409` / `SEATS_UNAVAILABLE`), mijozda o'zbekcha matnga o'giriladi.
+- Baza o'zgarishi faqat yangi migratsiya orqali (`supabase migration new <nom>`), mavjud migratsiya tahrirlanmaydi.
+
+## Prototipda yo'q
 
 Admin/dispetcher paneli, to'lov, reyting, chat, xarita, FCM push, pauza, GPS heartbeat, jarimalar, hodisalar, audit jurnali, tushish bekatlari, iOS, ruscha til.
 
-Haydovchini admin tasdiqlashi o'rniga `settings` jadvalidagi `driver.auto_approve = true` kaliti ishlatiladi: yoqilgan bo'lsa, haydovchi darhol `approved` bo'ladi. Bir hisob = bitta rol.
+## Ishlab chiqish yo'l xaritasi
 
-## Development Roadmap
+1. Ishlab chiqish muhitini tayyorlash.
+2. Baza sxemasi va xavfsizlik (RLS).
+3. Ro'yxatdan o'tish va rol RPC'lari.
+4. Haydovchi navbati RPC'lari.
+5. Yo'lovchi band qilish RPC'lari.
+6. Avtomatik bekor qilish (cron).
+7. Mijoz arxitekturasi va navigatsiya.
+8. Ro'yxatdan o'tish va kirish ekranlari.
+9. Yo'lovchi va haydovchi ekranlari.
+10. Realtime yangilanishlar.
+11. Testlash va xavfsizlik tekshiruvi.
+12. Android va Web build.
 
-1. Ishlab chiqish muhitini tayyorlash
-2. Loyiha arxitekturasini yaratish
-3. Navigatsiyani amalga oshirish
-4. Supabase'ni sozlash
-5. Autentifikatsiyani amalga oshirish
-6. Rol tanlash va yo'lovchi onboarding
-7. Haydovchi ro'yxatdan o'tishi
-8. Haydovchi funksiyalari (e'lon, navbatga yozilish)
-9. Yo'lovchi funksiyalari (navbatni ko'rish, band qilish)
-10. Band muddati tugashi (avtomatik bekor qilish)
-11. Realtime yangilanishlar
-12. Testlash
-13. Android va Web build'larini tayyorlash
+## Ishlab chiqish jurnali
 
-## Development Log
+### Dastlabki rejalashtirish
 
-**Dastlabki rejalashtirish**
-
-- Loyiha g'oyasi, yo'lovchi va haydovchi rollari aniqlandi.
-- React Native + Expo va Supabase tanlandi.
+- Ilova g'oyasi va asosiy funksiyalar aniqlandi.
+- Yo'lovchi va haydovchi rollari belgilandi.
+- React Native (Expo) va Supabase tanlandi.
 - Android va Web platformalari rejalashtirildi.
 
-**1–5-qismlar: asos**
+### Baza qatlami (1-8 qismlar)
 
-- Expo loyihasi, papkalar tuzilmasi va navigatsiya.
-- Supabase lokal muhiti, ma'lumotlar modeli va pgTAP testlari.
-- Telefon + SMS OTP orqali kirish, sessiya va profil yuklash.
-
-**6-qism: rol tanlash va yo'lovchi onboarding**
-
-- `register_profile` RPC va uning pgTAP testi (`02_register_profile.test.sql`).
-- `useRegisterProfile` hook: RPC chaqiradi va profil keshini yangilaydi.
-- Rol tanlash ekrani: ism maydoni, ikkita karta, "Rolni keyin o'zgartirib bo'lmaydi" eslatmasi, tasdiqlash dialogi, xato Snackbar'i.
-- `guards.ts` kengaytirildi: rolsiz foydalanuvchi rol ekraniga, yo'lovchi `/passenger`ga, haydovchi `/driver/register`ga yo'naltiriladi.
-- Yo'lovchi bosh ekrani (salomlashish va chiqish) va haydovchi ro'yxatdan o'tishi uchun placeholder qo'shildi.
-
-**7-qism — Haydovchini ro‘yxatdan o‘tkazish**
-
-- Har bir foydalanuvchi uchun alohida yuklash (`insert`) va ko‘rish (`select`) siyosatlariga ega maxfiy `driver-documents` Storage bucket (5 MB, JPEG/PNG/WEBP) qo‘shildi.
-- `driver_register` va `get_my_driver` RPC funksiyalari hamda pgTAP testlari qo‘shildi.
-- Haydovchini ro‘yxatdan o‘tkazish/holat/bosh ekranlari, rasm yuklash va marshrut himoyasi (route guards) qo‘shildi.
-- Web versiyada tekshirildi. Android qurilmalarda rasm tanlash funksiyasi hali tekshirilmagan.
+- Baza sxemasi, RLS va rol bo'yicha ro'yxatdan o'tish RPC'lari yozildi.
+- Haydovchini ro'yxatdan o'tkazish RPC'lari qo'shildi.
+- 8-qism: haydovchi navbatga qo'shilishi (`driver_join_queue`, geofence ixtiyoriy), chiqishi (`driver_leave_queue`) va yo'lga chiqishi (`driver_depart`) yozildi. Bekor qilingan bandlar uchun yo'lovchilarga `booking.cancelled` xabari yoziladi.
+- `supabase/tests/database/04_driver_queue.test.sql` pgTAP testlari qo'shildi, turlar yangilandi.
 
 ## README bilan ishlash tartibimiz
 
-Har bir bosqichdan keyin README'ning tegishli bo'limini ham yangilab boramiz:
+Har bir bosqichdan keyin README'ning tegishli bo'limini yangilab boramiz:
 
-- **Features**: yangi funksiya qo'shilganda.
-- **Tech Stack**: yangi texnologiya yoki kutubxona qo'shilganda.
-- **Project Structure**: fayl va papkalar o'zgarganda.
-- **Installation**: o'rnatish jarayoni o'zgarganda.
-- **Project Status**: vazifa bajarilganda.
-- **Development Log**: bosqich yakunlanganda.
+- **Loyiha holati**: vazifa bajarilganda.
+- **Texnologiyalar**: yangi texnologiya yoki kutubxona qo'shilganda.
+- **Loyiha tuzilmasi**: fayl va papkalar o'zgarganda.
+- **Ishga tushirish**: o'rnatish jarayoni o'zgarganda.
+- **Ishlab chiqish jurnali**: bosqich yakunlanganda.
 
 > README har doim kodimizning haqiqiy holatiga mos bo'ladi. Hali yozilmagan funksiyalarni tayyor deb belgilamaymiz.

@@ -229,7 +229,16 @@ isOneToOne: false
             [_ in never]: never
           }
           Functions: {
-            "driver_register":
+            "driver_depart":
+{ Args: { "p_force"?: boolean }; Returns: Json
+                           },
+"driver_join_queue":
+{ Args: { "p_fare": number,"p_lat"?: number,"p_lng"?: number,"p_route_id": string,"p_seats_total": number,"p_vehicle_id": string }; Returns: Json
+                           },
+"driver_leave_queue":
+{ Args: Record<PropertyKey, never>; Returns: Json
+                           },
+"driver_register":
 { Args: { "p_license_number": string,"p_license_photo_path": string,"p_vehicle": Json }; Returns: Json
                            },
 "get_my_driver":
