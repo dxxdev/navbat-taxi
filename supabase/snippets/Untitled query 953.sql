@@ -1,0 +1,1 @@
+select status, cancel_reason from public.bookings order by created_at desc limit 1;

@@ -19,10 +19,11 @@ import { strings } from "@/l10n/strings";
 
 import { FareField } from "./FareField";
 import { SeatStepper } from "./SeatStepper";
+import { useLocalSearchParams } from "expo-router";
 
 export function PublishScreen() {
   const theme = useTheme();
-  const me = useMyVehicles();;
+  const me = useMyVehicles();
   const join = useJoinQueue();
 
   // Prototip: birinchi faol shahar va birinchi faol vokzal ishlatiladi
@@ -40,18 +41,24 @@ export function PublishScreen() {
 
   const vehicles = me.data ?? [];
   const vehicle =
-    vehicles.find((v) => v.id === vehicleId) ?? (vehicles.length === 1 ? vehicles[0] : undefined);
-  const seats = vehicle ? Math.min(seatsState ?? vehicle.seats_total, vehicle.seats_total) : 1;
+    vehicles.find((v) => v.id === vehicleId) ??
+    (vehicles.length === 1 ? vehicles[0] : undefined);
+  const seats = vehicle
+    ? Math.min(seatsState ?? vehicle.seats_total, vehicle.seats_total)
+    : 1;
 
   const route = routes.data?.find((r) => r.id === routeId);
   const fare = fareText === "" ? NaN : Number(fareText);
-  const fareInRange = !!route && fare >= route.fare_min && fare <= route.fare_max;
+  const fareInRange =
+    !!route && fare >= route.fare_min && fare <= route.fare_max;
   const fareError =
     route && fareText !== "" && !fareInRange
       ? `Narx ${formatSom(route.fare_min)} – ${formatSom(route.fare_max)} oralig'ida bo'lishi kerak`
       : undefined;
 
   const canSubmit = !!route && !!vehicle && fareInRange && !join.isPending;
+  const { closed } = useLocalSearchParams<{ closed?: string }>();
+  const [closedSnack, setClosedSnack] = useState(closed === "1");
 
   function selectRoute(r: Route) {
     setRouteId(r.id);
@@ -66,9 +73,18 @@ export function PublishScreen() {
     );
   }
 
-  if (me.isPending || cities.isPending || stations.isPending || routes.isPending) {
+  if (
+    me.isPending ||
+    cities.isPending ||
+    stations.isPending ||
+    routes.isPending
+  ) {
     // routes enabled=false bo'lganda isPending true qoladi; shuning uchun shartni aniqlashtiramiz
-    const waiting = me.isPending || cities.isPending || (!!city && stations.isPending) || (!!station && routes.isPending);
+    const waiting =
+      me.isPending ||
+      cities.isPending ||
+      (!!city && stations.isPending) ||
+      (!!station && routes.isPending);
     if (waiting) return <ActivityIndicator style={styles.center} />;
   }
 
@@ -82,7 +98,8 @@ export function PublishScreen() {
             cities.refetch();
             stations.refetch();
             routes.refetch();
-          }}>
+          }}
+        >
           {strings.driver.retry}
         </Button>
       </View>
@@ -98,7 +115,10 @@ export function PublishScreen() {
         <View style={styles.section}>
           <Text variant="titleMedium">{strings.driver.route}</Text>
           {city && station ? (
-            <Text variant="bodySmall" style={{ color: theme.colors.onSurfaceVariant }}>
+            <Text
+              variant="bodySmall"
+              style={{ color: theme.colors.onSurfaceVariant }}
+            >
               {city.name_uz} · {station.name}
             </Text>
           ) : null}
@@ -110,18 +130,22 @@ export function PublishScreen() {
                   key={String(r.id)}
                   accessibilityRole="radio"
                   accessibilityState={{ selected }}
-                  onPress={() => selectRoute(r)}>
+                  onPress={() => selectRoute(r)}
+                >
                   <Surface
                     elevation={0}
                     style={[
                       styles.card,
                       {
-                        borderColor: selected ? theme.colors.primary : theme.colors.outlineVariant,
+                        borderColor: selected
+                          ? theme.colors.primary
+                          : theme.colors.outlineVariant,
                         backgroundColor: selected
                           ? theme.colors.primaryContainer
                           : theme.colors.surface,
                       },
-                    ]}>
+                    ]}
+                  >
                     <RadioButton.Android
                       value={String(r.id)}
                       status={selected ? "checked" : "unchecked"}
@@ -151,7 +175,8 @@ export function PublishScreen() {
             <Text>{strings.driver.noVehicle}</Text>
           ) : vehicles.length === 1 ? (
             <Text variant="bodyLarge">
-              {vehicles[0].model} · {vehicles[0].color} · {vehicles[0].plate_number}
+              {vehicles[0].model} · {vehicles[0].color} ·{" "}
+              {vehicles[0].plate_number}
             </Text>
           ) : (
             vehicles.map((v) => (
@@ -162,7 +187,8 @@ export function PublishScreen() {
                 onPress={() => {
                   setVehicleId(v.id);
                   setSeatsState(null);
-                }}>
+                }}
+              >
                 {v.model} · {v.plate_number}
               </Button>
             ))
@@ -173,7 +199,12 @@ export function PublishScreen() {
         {vehicle ? (
           <View style={styles.section}>
             <Text variant="titleMedium">{strings.driver.seats}</Text>
-            <SeatStepper value={seats} min={1} max={vehicle.seats_total} onChange={setSeatsState} />
+            <SeatStepper
+              value={seats}
+              min={1}
+              max={vehicle.seats_total}
+              onChange={setSeatsState}
+            />
           </View>
         ) : null}
 
@@ -196,13 +227,25 @@ export function PublishScreen() {
           disabled={!canSubmit}
           loading={join.isPending}
           onPress={submit}
-          contentStyle={styles.btnContent}>
+          contentStyle={styles.btnContent}
+        >
           {strings.driver.join}
         </Button>
       </ScrollView>
 
-      <Snackbar visible={message !== null} onDismiss={() => setMessage(null)} duration={5000}>
+      <Snackbar
+        visible={message !== null}
+        onDismiss={() => setMessage(null)}
+        duration={5000}
+      >
         {message ?? ""}
+      </Snackbar>
+      <Snackbar
+        visible={closedSnack}
+        onDismiss={() => setClosedSnack(false)}
+        duration={4000}
+      >
+        {strings.driverQueue.tripClosed}
       </Snackbar>
     </>
   );

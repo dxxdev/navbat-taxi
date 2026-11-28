@@ -11,12 +11,33 @@ export type Vehicle = Tables<"vehicles">;
 export const driverQueueKey = ["driver", "queue"] as const;
 export const myVehiclesKey = ["driver", "vehicles"] as const;
 
-// get_driver_queue natijasi (taxmin; 11-qismda aniqlashtiriladi)
+// get_driver_queue natijasi (migratsiya: get_driver_queue_details)
+export type QueueNeighbor = {
+  position: number;
+  model: string;
+  plate_number: string | null;
+};
+
+export type DriverBooking = {
+  id: string;
+  seats: number;
+  fare_per_seat: number;
+  status: string;
+  expires_at: string; // UTC ISO
+  passenger_name: string | null;
+  passenger_phone: string | null;
+};
+
 export type DriverQueue = {
   entry: Tables<"queue_entries">;
   position: number;
+  total_active: number;
   free_seats: number;
-  bookings: Tables<"bookings">[];
+  city_name: string;
+  destination_name: string;
+  prev: QueueNeighbor | null;
+  next: QueueNeighbor | null;
+  bookings: DriverBooking[];
 };
 
 export type JoinQueueInput = {
@@ -50,7 +71,9 @@ export async function leaveQueue(): Promise<void> {
 }
 
 export async function depart({ force = false }: { force?: boolean } = {}): Promise<void> {
-  await unwrap(supabase.rpc("driver_depart", { p_force: force }));
+  // unwrap ishlatilmaydi: xato kodi (ACTIVE_BOOKINGS_PENDING) asl holida saqlanishi kerak
+  const { error } = await supabase.rpc("driver_depart", { p_force: force });
+  if (error) throw error;
 }
 
 export async function changeSeats(delta: 1 | -1): Promise<void> {
@@ -58,7 +81,9 @@ export async function changeSeats(delta: 1 | -1): Promise<void> {
 }
 
 export async function markArrived(bookingId: string): Promise<void> {
-  await unwrap(supabase.rpc("driver_mark_arrived", { p_booking_id: bookingId }));
+  await unwrap(
+    supabase.rpc("driver_mark_arrived", { p_booking_id: bookingId }),
+  );
 }
 
 // ---- Query hook'lar ----
