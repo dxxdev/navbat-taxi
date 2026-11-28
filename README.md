@@ -15,6 +15,17 @@ Vokzaldagi yo'nalishli taksilar navbatini raqamlashtiruvchi ilova. Haydovchi vok
 
 Bir hisob — bitta rol (ro'yxatdan o'tishda tanlanadi).
 
+## Xususiyatlar
+
+### Haydovchi: navbatga yozilish (tayyor)
+
+- Yo'nalishni tanlash (shahar · vokzal, narx oralig'i bilan).
+- Faol mashinani tanlash (bittasi bo'lsa avtomatik).
+- Jami bo'sh o'rindiqlar sonini belgilash (1 dan mashina sig'imigacha).
+- Narxni so'mda kiritish: yo'nalish oralig'i bilan tekshiriladi, tez tanlov chiplari bor.
+- `driver_join_queue` orqali navbatga yozilish; xatolar o'zbekcha ko'rsatiladi.
+- Navbatdan chiqish (tasdiqlash dialogi bilan).
+
 ### Yo'lovchi
 
 - Navbatdagi mashinalarni ko'rish.
@@ -40,6 +51,11 @@ Bir hisob — bitta rol (ro'yxatdan o'tishda tanlanadi).
 - React Native Paper (Material 3)
 - Platformalar: Android va Web
 
+### Frontend
+
+- React Native Paper (Material 3)
+- TanStack Query (server holati)
+
 ### Backend
 
 - Supabase: PostgreSQL, PostGIS, Auth (telefon + SMS OTP), Realtime, Storage, Edge Functions
@@ -54,17 +70,25 @@ Bir hisob — bitta rol (ro'yxatdan o'tishda tanlanadi).
 ## Repozitoriy tuzilmasi
 
 ```text
-navbat-taxi/
-  mobile/      React Native (Expo) ilovasi
-    app/       Expo Router marshrutlari
-    src/       core, l10n, data, features, components, types
-  supabase/
-    migrations/        Baza migratsiyalari
-    functions/         Edge Functions
-    tests/database/    pgTAP testlari
-    seed.sql           Boshlang'ich ma'lumotlar
-  docs/        Hujjatlar (docs/sql-snippets/ - qo'lda ishlatiladigan SQL'lar)
-  scripts/     Yordamchi skriptlar
+mobile/
+  app/
+    driver/
+      index.tsx        # navbat bo'lmasa PublishScreen, bo'lsa navbat ekrani
+      register.tsx
+      status.tsx
+  src/
+    core/              # auth, supabase klienti, errors, format, guards
+    data/
+      catalog.ts       # shaharlar, vokzallar, yo'nalishlar (umumiy hook'lar)
+      driver.ts        # haydovchi profili va ro'yxatdan o'tish
+      driverQueue.ts   # navbat RPC'lari va hook'lari
+      queryKeys.ts
+      unwrap.ts        # Supabase xatolarini o'zbekcha Error'ga o'giradi
+    features/
+      driver/          # DriverHeader, PublishScreen, SeatStepper, FareField, QueuePlaceholder
+    l10n/strings.ts
+    types/
+supabase/
 ```
 
 ## Bajarilgan backend funksiyalari (RPC)
@@ -99,6 +123,7 @@ Asosiy qoidalar:
 - [x] Haydovchi ro'yxatdan o'tishi (backend)
 - [x] Navbatga yozilish, chiqish va yo'lga chiqish (backend)
 - [x] O'rindiq boshqaruvi, "Keldi" va haydovchi navbat ko'rinishi (backend)
+- [x] Haydovchi yo'nalish e'lon qilish ekrani
 - [ ] Yo'lovchi: navbatni ko'rish (`get_route_queue`) va o'rindiq band qilish (`book_seat`)
 - [ ] Bandning avtomatik bekor qilinishi (cron)
 - [ ] Navigatsiya va umumiy UI komponentlari
@@ -203,6 +228,15 @@ EXPO_PUBLIC_SUPABASE_PUBLISHABLE_KEY=...
 - Rollarga bo'lingan ro'yxatdan o'tish va haydovchi ro'yxatdan o'tishi yozildi.
 - Haydovchining navbatga yozilishi, chiqishi va yo'lga chiqishi yozildi.
 - 9-qism: `driver_change_seats`, `driver_mark_arrived`, `get_driver_queue` RPC'lari va ularning pgTAP testlari (`05_driver_seats.test.sql`) yozildi. Testlar o'tdi, turlar qayta generatsiya qilindi.
+
+### Haydovchi yo'nalish e'lon qilish ekrani (10-qism)
+
+- Katalog hook'lari qo'shildi (`catalog.ts`): shaharlar, vokzallar, yo'nalishlar.
+- Navbat RPC'lari uchun `driverQueue.ts` yaratildi: `get_driver_queue`, `driver_join_queue`, `driver_leave_queue`, `driver_depart`, `driver_change_seats`, `driver_mark_arrived`.
+- `PublishScreen` yozildi: yo'nalish, mashina, o'rindiq stepper'i va narx maydoni (oraliq tekshiruvi bilan).
+- Navbatdagi haydovchi uchun vaqtinchalik `QueuePlaceholder` (to'liq ekran 11-qismda).
+- Narx formatlash yordamchisi: `src/core/format.ts` (`120000` -> `"120 000 so'm"`).
+- Ma'lum cheklov: vokzal tanlash yo'q, birinchi faol shahar va vokzal olinadi; joylashuv yuborilmaydi (geofence o'chiq).
 
 ## README bilan ishlash tartibimiz
 

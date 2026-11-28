@@ -1,7 +1,7 @@
 // Barcha matnlar shu yerda (faqat o'zbekcha, lotin)
 export const strings = {
   app: {
-    name: "NavbatTaksi",
+    name: "NavbatTaxi",
     tagline: "Vokzalga bormasdan navbatni ko'ring va o'rindiq band qiling",
   },
   common: {
@@ -36,6 +36,7 @@ export const strings = {
     driverTitle: "Haydovchi",
     driverBody: "Haydovchi ekranlari keyingi qismlarda yoziladi",
   },
+  // Sinov rejimi uchun
   dev: {
     hint: "Sinov rejimi: raqam +998 90 123 45 67, kod 123456",
   },
@@ -62,6 +63,26 @@ export const strings = {
     signOut: "Chiqish",
   },
   driver: {
+    menu: "Menyu",
+    logout: "Chiqish",
+    publishTitle: "Navbatga yozilish",
+    route: "Yo'nalish",
+    vehicle: "Mashina",
+    seats: "Jami bo'sh o'rindiq",
+    fare: "Narx",
+    fareUnit: "so'm",
+    fareMid: "O'rtacha",
+    join: "Navbatga yozilish",
+    noRoutes: "Hozircha faol yo'nalish yo'q",
+    noVehicle: "Faol mashina topilmadi",
+    inQueue: "Navbatdasiz",
+    leave: "Navbatdan chiqish",
+    leaveTitle: "Navbatdan chiqasizmi?",
+    leaveText: "Navbatdagi o'rningiz va faol bandlar bekor bo'ladi.",
+    cancel: "Bekor qilish",
+    confirmLeave: "Ha, chiqish",
+    retry: "Qayta urinish",
+    loadError: "Ma'lumotni yuklab bo'lmadi",
     registerTitle: "Haydovchi ma'lumotlari",
     licenseNumber: "Haydovchilik guvohnomasi raqami",
     licensePhoto: "Guvohnoma rasmi",
